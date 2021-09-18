@@ -519,7 +519,7 @@ const registerAppMenu = () => {
 				{
 					label: 'Twitter',
 					click: async () => {
-						await shell.openExternal('https://www.twitter.com/synthona');
+						await shell.openExternal('https://www.twitter.com/yarnpoint');
 					},
 				},
 				{
