@@ -57,7 +57,6 @@ app.use((req, res, next) => {
 		'http://localhost:3000',
 		'http://localhost:9000',
 		'http://localhost:9000',
-		'http://192.168.1.4:4000',
 	];
 
 	// detect if the request is internal, within this device,
