@@ -247,13 +247,10 @@ exports.searchNodes = async (req, res, next) => {
 		if (searchQuery) {
 			whereStatement[Op.or] = [
 				{
-					name: { [Op.like]: fuzzySearch },
+					name: { [Op.like]: '%' + fuzzySearch + '%' },
 				},
 				{
-					preview: { [Op.like]: fuzzySearch },
-				},
-				{
-					content: { [Op.like]: fuzzySearch },
+					content: { [Op.like]: '%' + searchQuery + '%' },
 				},
 			];
 			// if there is a search query only return searchable items

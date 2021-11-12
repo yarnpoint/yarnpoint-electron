@@ -119,6 +119,11 @@ if (debug) {
 	});
 }
 
+// // recieve messages from electron process here
+// process.on('message', (message) => {
+// 	console.log(message);
+// });
+
 // TODO: i should not be calling sequelize.sync on every single server start.
 // it should only be called intentionally on like...setup? all other changes
 // should be applied via migrations

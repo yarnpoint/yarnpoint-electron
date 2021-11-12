@@ -1,7 +1,16 @@
 const path = require('path');
 const fs = require('fs');
 const crytpo = require('crypto');
-const { app, session, shell, globalShortcut, BrowserWindow, Menu, clipboard } = require('electron');
+const {
+	app,
+	session,
+	shell,
+	globalShortcut,
+	BrowserWindow,
+	Menu,
+	clipboard,
+	ipcMain,
+} = require('electron');
 const contextMenu = require('electron-context-menu');
 
 // load configuration data
@@ -77,13 +86,20 @@ const serverProcess = fork(path.join(__dirname, './src/server/app.js'), ['args']
 });
 
 serverProcess.on('message', (message) => {
+	// test
+	// serverProcess.send({ test: 'hello' });
+	// existing
 	if (message === 'server-started') {
 		serverReady = true;
 		if (serverReady && electronReady && mainWindowCreated) {
 			windowList[0].reload();
 		}
 	} else {
-		console.log(message);
+		// HERE
+		// this is where we recieve messages from the server, ANY message!
+		// this is how we can take a string command from the server to, say, spawn a file-picker
+		// and we can send messages back??? somehow
+		// console.log(message);
 	}
 });
 
@@ -109,6 +125,7 @@ const mainWindow = (initUrl) => {
 			enableRemoteModule: false,
 			worldSafeExecuteJavaScript: true,
 			contextIsolation: true,
+			preload: path.join(__dirname, 'preload.js'), // use a preload script
 		},
 		show: false,
 	});
@@ -229,6 +246,27 @@ app.on('ready', () => {
 	}
 });
 
+// set up ipc event
+ipcMain.on('toMain', (event, args) => {
+	// TODO: this whole findInPage thing...the findNext feature doesn't work
+	// i think there's actually an issue with the electron implementation
+	// in the meantime, at least the basic functionality works now
+	if (args.action && typeof args.action === 'string') {
+		switch (args.action) {
+			case 'search':
+				if (args.query && typeof args.query === 'string') {
+					BrowserWindow.getFocusedWindow().webContents.findInPage(args.query, { forward: true });
+				}
+				return;
+			case 'hide-search':
+				BrowserWindow.getFocusedWindow().webContents.stopFindInPage('clearSelection');
+				return;
+			default:
+				return;
+		}
+	}
+});
+
 app.on('before-quit', () => {
 	console.log('✔ winding down');
 	serverProcess.kill('SIGINT');
@@ -292,7 +330,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+1', () => {
-		key1 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key1 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 2 key
 	let key2 = null;
@@ -302,7 +342,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+2', () => {
-		key2 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key2 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 3 key
 	let key3 = null;
@@ -312,7 +354,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+3', () => {
-		key3 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key3 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 4 key
 	let key4 = null;
@@ -322,7 +366,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+4', () => {
-		key4 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key4 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 5 key
 	let key5 = null;
@@ -332,7 +378,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+5', () => {
-		key5 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key5 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 6 key
 	let key6 = null;
@@ -342,7 +390,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+6', () => {
-		key6 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key6 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 7 key
 	let key7 = null;
@@ -352,7 +402,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+7', () => {
-		key7 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key7 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 8 key
 	let key8 = null;
@@ -362,7 +414,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+8', () => {
-		key8 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key8 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 	// 9 key
 	let key9 = null;
@@ -372,7 +426,9 @@ const registerQuickMenu = () => {
 		}
 	});
 	globalShortcut.register('CommandOrControl+ALT+9', () => {
-		key9 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		if (BrowserWindow.getFocusedWindow()) {
+			key9 = BrowserWindow.getFocusedWindow().webContents.getURL();
+		}
 	});
 };
 
@@ -409,6 +465,19 @@ const registerAppMenu = () => {
 						BrowserWindow.getFocusedWindow().loadURL(
 							'http://' + config.CLIENT_BASE + ':' + config.CLIENT_PORT + '/'
 						);
+					},
+				},
+				{
+					label: 'Find',
+					accelerator: 'CommandOrControl+F',
+					click: async () => {
+						// console.log('search...send toMain here');
+						BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
+							message: 'search',
+						});
+						// BrowserWindow.getFocusedWindow().loadURL(
+						// 	'http://' + config.CLIENT_BASE + ':' + config.CLIENT_PORT + '/'
+						// );
 					},
 				},
 				{
@@ -526,6 +595,12 @@ const registerAppMenu = () => {
 					label: 'Patreon',
 					click: async () => {
 						await shell.openExternal('https://www.patreon.com/yarnpoint');
+					},
+				},
+				{
+					label: 'Discord',
+					click: async () => {
+						await shell.openExternal('https://discord.com/invite/w7cxGaXAbn');
 					},
 				},
 				{
