@@ -608,6 +608,12 @@ const registerAppMenu = () => {
 					},
 				},
 				{
+					label: 'Website',
+					click: async () => {
+						await shell.openExternal('http://www.yarnpoint.net');
+					},
+				},
+				{
 					label: 'Check For Updates',
 					click: async () => {
 						checkForUpdates(true);
