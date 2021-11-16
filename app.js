@@ -14,7 +14,8 @@ const {
 const contextMenu = require('electron-context-menu');
 
 // load configuration data
-const APP_VERSION = '1.2.6';
+let packageJson = require('./package.json');
+const APP_VERSION = packageJson.version;
 let config;
 let configDirPath = app.getPath('userData');
 let configPath = path.join(configDirPath, 'config.json');
@@ -94,6 +95,8 @@ serverProcess.on('message', (message) => {
 		if (serverReady && electronReady && mainWindowCreated) {
 			windowList[0].reload();
 		}
+		// check for updates
+		checkForUpdates();
 	} else {
 		// HERE
 		// this is where we recieve messages from the server, ANY message!
@@ -232,8 +235,9 @@ app.on('ready', () => {
 			);
 		}
 	});
-	// register the quickmen system
+	// register the quickmenu system
 	registerQuickMenu();
+	// if we're not in debug mode, enable security policies
 	if (!config.DEBUG) {
 		session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
 			callback({
@@ -598,24 +602,15 @@ const registerAppMenu = () => {
 					},
 				},
 				{
-					label: 'Discord',
-					click: async () => {
-						await shell.openExternal('https://discord.com/invite/w7cxGaXAbn');
-					},
-				},
-				{
 					label: 'Email',
 					click: async () => {
 						await shell.openExternal('mailto:synthona@gmail.com');
 					},
 				},
 				{
-					label: 'Yarnpoint v' + APP_VERSION,
-				},
-				{
 					label: 'Check For Updates',
 					click: async () => {
-						await shell.openExternal('https://yarnpoint.itch.io/yarnpoint');
+						checkForUpdates(true);
 					},
 				},
 			],
@@ -631,4 +626,33 @@ const validUrl = (value) => {
 		return false;
 	}
 	return true;
+};
+
+const checkForUpdates = (reportNegative) => {
+	const { net } = require('electron');
+	const request = net.request(
+		'https://raw.githubusercontent.com/yarnpoint/yarnpoint-electron/master/package.json'
+	);
+	request.on('response', (response) => {
+		response.on('data', (chunk) => {
+			// parse the json data from the github package.json route
+			let jsonData = JSON.parse(chunk);
+			let githubVersion = jsonData.version;
+			// check for a version match
+			if (githubVersion === APP_VERSION) {
+				console.log('✔ yarnpoint is up to date');
+				if (reportNegative) {
+					BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
+						message: 'latest-version',
+					});
+				}
+			} else {
+				console.log('a NEW version is available :)');
+				BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
+					message: 'update-available',
+				});
+			}
+		});
+	});
+	request.end();
 };
