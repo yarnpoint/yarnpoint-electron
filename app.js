@@ -616,7 +616,7 @@ const registerAppMenu = () => {
 					},
 				},
 				{
-					label: 'Website',
+					label: 'Yarnpoint',
 					click: async () => {
 						await shell.openExternal('http://www.yarnpoint.net');
 					},
