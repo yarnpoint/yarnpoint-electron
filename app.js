@@ -297,6 +297,7 @@ const createNewWindowAtURL = (initUrl) => {
 			enableRemoteModule: false,
 			worldSafeExecuteJavaScript: true,
 			contextIsolation: true,
+			preload: path.join(__dirname, 'preload.js'), // use a preload script
 		},
 		show: false,
 	});
@@ -472,19 +473,6 @@ const registerAppMenu = () => {
 					},
 				},
 				{
-					label: 'Find',
-					accelerator: 'CommandOrControl+F',
-					click: async () => {
-						// console.log('search...send toMain here');
-						BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
-							message: 'search',
-						});
-						// BrowserWindow.getFocusedWindow().loadURL(
-						// 	'http://' + config.CLIENT_BASE + ':' + config.CLIENT_PORT + '/'
-						// );
-					},
-				},
-				{
 					label: 'Graph',
 					accelerator: 'CommandOrControl+G',
 					click: async () => {
@@ -511,6 +499,26 @@ const registerAppMenu = () => {
 		{
 			label: 'Edit',
 			submenu: [
+				{
+					label: 'Find In Page',
+					accelerator: 'CommandOrControl+F',
+					click: async () => {
+						// send message to main
+						BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
+							message: 'search',
+						});
+					},
+				},
+				{
+					label: 'Search All',
+					accelerator: 'CommandOrControl+L',
+					click: async () => {
+						// send message to main
+						BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
+							message: 'search-all',
+						});
+					},
+				},
 				{
 					label: 'Copy Url',
 					click: async () => {
