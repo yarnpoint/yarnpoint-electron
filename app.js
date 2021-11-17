@@ -627,6 +627,10 @@ const registerAppMenu = () => {
 						checkForUpdates(true);
 					},
 				},
+				{ type: 'separator' },
+				{
+					label: 'v' + APP_VERSION,
+				},
 			],
 		},
 	]);
