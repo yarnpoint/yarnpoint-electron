@@ -658,7 +658,7 @@ const checkForUpdates = (reportNegative) => {
 			let githubVersion = jsonData.version;
 			// check for a version match
 			if (githubVersion === APP_VERSION) {
-				console.log('✔ yarnpoint is up to date');
+				console.log('✔ ' + config.APP_NAME + ' is up to date');
 				if (reportNegative) {
 					BrowserWindow.getFocusedWindow().webContents.send('fromMain', {
 						message: 'latest-version',
