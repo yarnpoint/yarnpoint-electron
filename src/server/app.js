@@ -62,7 +62,24 @@ app.use((req, res, next) => {
 	// detect if the request is internal, within this device,
 	// or external, from another IP address
 	if (req.hostname !== 'localhost') {
-		console.log('external request detected at hostname ' + req.hostname);
+		let currentTime = new Date();
+		let formattedTime = currentTime.toLocaleString('en-US', {
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: true,
+		});
+		let formattedDate = currentTime.toLocaleString('en-US', {
+			dateStyle: 'short',
+		});
+		// log external requests to console
+		console.log(
+			'external request detected to host ' +
+				req.hostname +
+				' at ' +
+				formattedTime +
+				' on ' +
+				formattedDate
+		);
 	}
 
 	let reqOrigin = req.get('origin');
